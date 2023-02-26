@@ -1,0 +1,41 @@
+section .data
+    array db 5, 2, 8, 1, 9, 3, 7, 4, 6    ; 待排序数组
+
+section .text
+    global _start
+    
+_start:
+    mov ecx, 9                  ; 数组元素个数
+    mov esi, array              ; esi指向数组首地址
+    mov edx, ecx                ; edx = ecx
+
+outer_loop:
+    dec edx                     ; edx--，由于最后一个元素不需要比较，所以只需要比较前面的元素
+    jz end_outer                ; 如果edx = 0，说明已经比较完所有元素，跳出外层循环
+    
+    mov ecx, edx                ; 每一轮比较的元素个数，随着外层循环不断递减
+    mov esi, array              ; 每一轮比较都从数组头部开始
+    mov ebx, esi                ; ebx用于交换元素
+    
+inner_loop:
+    cmp ecx, 0                  ; 如果ecx = 0，说明已经比较完当前轮次的元素
+    jz end_inner                ; 跳出内层循环
+    
+    mov al, [esi]               ; 取出当前元素值，存入al寄存器
+    cmp al, [esi+1]             ; 比较当前元素和后面一个元素的大小关系
+    jle no_swap                 ; 如果当前元素比后面的元素小或相等，不交换
+    mov bl, [esi+1]             ; 否则，将后面的元素值存入bl寄存器
+    mov [esi+1], al             ; 将当前元素值存入后面的元素位置
+    mov [esi], bl               ; 将后面的元素值存入当前元素位置
+    
+no_swap:
+    inc esi                     ; 指向下一个元素
+    dec ecx                     ; ecx--，已比较的元素个数-1
+    jmp inner_loop              ; 继续比较下一个元素
+
+end_inner:
+    jmp outer_loop              ; 继续下一轮比较
+
+end_outer:
+    ; 排序完成，可以在这里输出排序结果
+    ; 或者调用_exit退出程序
